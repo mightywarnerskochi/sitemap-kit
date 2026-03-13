@@ -1,11 +1,11 @@
 {
-    "name": "migthywarners/sitemap-kit",
+    "name": "dev1kochi-crypto/sitemap-kit",
     "description": "A reusable Laravel package for automatic sitemap generation.",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "migthywarners",
+            "name": "dev1kochi-crypto",
             "email": "[EMAIL_ADDRESS]"
         }
     ],
@@ -16,13 +16,13 @@
     },
     "autoload": {
         "psr-4": {
-            "migthywarners\\SitemapKit\\": "src/"
+            "Dev1kochiCrypto\\SitemapKit\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "migthywarners\\SitemapKit\\SitemapAutomationServiceProvider"
+                "Dev1kochiCrypto\\SitemapKit\\SitemapAutomationServiceProvider"
             ]
         }
     }

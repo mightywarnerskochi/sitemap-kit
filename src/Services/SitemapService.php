@@ -11,7 +11,16 @@ class SitemapService
      */
     public function generate(): void
     {
-        SitemapGenerator::create(config('app.url'))
+        \Spatie\Sitemap\SitemapGenerator::create(config('app.url'))
+            ->hasCrawled(function (\Spatie\Sitemap\Tags\Url $url) {
+                if ($url->segment(1) === null) {
+                    $url->setPriority(1.0);
+                } else {
+                    $url->setPriority(0.8);
+                }
+                $url->setLastModificationDate(now());
+                return $url;
+            })
             ->writeToFile(public_path('sitemap.xml'));
     }
 
