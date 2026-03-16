@@ -13,10 +13,14 @@ return [
     */
 
     'models' => [
+        // Simple format (requires getSitemapUrl() or 'url' attribute on model)
         // \App\Models\Blog::class,
-        // \App\Models\Product::class,
-        // \App\Models\Service::class,
-        // \App\Models\Career::class,
+
+        // Dynamic format (specify URL prefix and optionally slug field)
+        // \App\Models\Service::class => [
+        //     'url_prefix' => '/services/',
+        //     'slug_field' => 'slug', // optional, defaults to 'slug'
+        // ],
     ],
 
     /*

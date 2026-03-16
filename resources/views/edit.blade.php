@@ -126,6 +126,15 @@
         </a>
     </div>
 
+    <div style="background-color: #ebf8ff; border: 1px solid #bee3f8; color: #2c5282; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; align-items: flex-start;">
+        <svg style="width: 1.25rem; height: 1.25rem; margin-right: 0.75rem; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div>
+            <strong>Note:</strong> Your manual edits here are <strong>preserved</strong> when new blogs or products are added automatically. However, clicking "Regenerate" on the main page will perform a full crawl and overwrite these changes.
+        </div>
+    </div>
+
     @if(isset($errors) && $errors->any())
         <div class="alert alert-error">
             <ul>

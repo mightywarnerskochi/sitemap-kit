@@ -11,7 +11,7 @@ class SitemapObserver
      */
     public function created($model): void
     {
-        dispatch(new UpdateSitemapJob());
+        dispatch(new UpdateSitemapJob($model));
     }
 
     /**
@@ -19,7 +19,7 @@ class SitemapObserver
      */
     public function updated($model): void
     {
-        dispatch(new UpdateSitemapJob());
+        dispatch(new UpdateSitemapJob($model));
     }
 
     /**
@@ -27,6 +27,6 @@ class SitemapObserver
      */
     public function deleted($model): void
     {
-        dispatch(new UpdateSitemapJob());
+        dispatch(new UpdateSitemapJob($model, true));
     }
 }

@@ -39,8 +39,9 @@ class SitemapAutomationServiceProvider extends ServiceProvider
         }
 
         // Register observers
-        $models = config('sitemap_automation.models', []);
-        foreach ($models as $model) {
+        $modelsWithConfig = config('sitemap_automation.models', []);
+        foreach ($modelsWithConfig as $key => $value) {
+            $model = is_numeric($key) ? $value : $key;
             if (class_exists($model)) {
                 $model::observe(SitemapObserver::class);
             }

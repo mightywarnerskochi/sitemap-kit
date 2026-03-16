@@ -13,12 +13,16 @@ class UpdateSitemapJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected $model;
+    protected $isDeletion;
+
     /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct($model = null, bool $isDeletion = false)
     {
-        //
+        $this->model = $model;
+        $this->isDeletion = $isDeletion;
     }
 
     /**
@@ -26,6 +30,6 @@ class UpdateSitemapJob implements ShouldQueue
      */
     public function handle(SitemapService $sitemapService): void
     {
-        $sitemapService->generate();
+        $sitemapService->generate($this->model, $this->isDeletion);
     }
 }
