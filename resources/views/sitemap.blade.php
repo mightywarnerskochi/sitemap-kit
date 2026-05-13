@@ -97,6 +97,72 @@
             color: #166534;
             border: 1px solid #bbf7d0;
         }
+        .sitemap-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .sitemap-actions .sitemap-btn {
+            flex: 1;
+            min-width: 200px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .sitemap-btn--orange {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%) !important;
+        }
+        .sitemap-btn--neutral {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+        }
+        .sitemap-seo-tools {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        .sitemap-seo-tools-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #a0aec0;
+            margin-bottom: 0.75rem;
+        }
+        .sitemap-tool-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            align-items: stretch;
+        }
+        .sitemap-tool-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1rem;
+            border-radius: 0.65rem;
+            border: 1px solid #cbd5e0;
+            background: #f8fafc;
+            color: #475569;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+        .sitemap-tool-link:hover {
+            border-color: #667eea;
+            color: #5a67d8;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(102, 126, 234, 0.12);
+        }
+        .sitemap-tool-link svg {
+            flex-shrink: 0;
+            opacity: 0.85;
+        }
     </style>
 @endif
 
@@ -124,13 +190,7 @@
         The system already monitors content changes, but you can manually trigger a full crawl here.
     </p>
 
-    <div class="sitemap-actions" style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-        <a href="{{ route('sitemap.redirects.index') }}" class="sitemap-btn" style="flex: 1; min-width: 200px; background: #2b6cb0; display: flex; align-items: center; justify-content: center; text-decoration: none;">
-            URL redirects
-        </a>
-        <a href="{{ route('sitemap.missing-urls.index') }}" class="sitemap-btn" style="flex: 1; min-width: 200px; background: #805ad5; display: flex; align-items: center; justify-content: center; text-decoration: none;">
-            404 log
-        </a>
+    <div class="sitemap-actions">
         <form action="{{ route('sitemap.generate') }}" method="GET" style="flex: 1; min-width: 200px;">
             <button type="submit" class="sitemap-btn">
                 {{ $exists ? 'Regenerate Sitemap' : 'Generate Sitemap' }}
@@ -141,14 +201,14 @@
         </form>
 
         @if($exists)
-            <a href="{{ route('sitemap.edit') }}" class="sitemap-btn" style="flex: 1; min-width: 200px; background: #ed8936; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            <a href="{{ route('sitemap.edit') }}" class="sitemap-btn sitemap-btn--orange" style="flex: 1; min-width: 200px;">
                 Edit Manual
                 <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                 </svg>
             </a>
 
-            <a href="{{ url('sitemap.xml') }}" target="_blank" class="sitemap-btn" style="flex: 1; min-width: 200px; background: #4a5568; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            <a href="{{ url('sitemap.xml') }}" target="_blank" class="sitemap-btn sitemap-btn--neutral" style="flex: 1; min-width: 200px;">
                 View Sitemap
                 <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -156,6 +216,24 @@
                 </svg>
             </a>
         @endif
+    </div>
+
+    <div class="sitemap-seo-tools">
+        <div class="sitemap-seo-tools-label">Related SEO tools</div>
+        <div class="sitemap-tool-row">
+            <a href="{{ route('sitemap.redirects.index') }}" class="sitemap-tool-link">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4M16 17H4m0 0l4 4m-4-4l4-4"></path>
+                </svg>
+                URL redirects
+            </a>
+            <a href="{{ route('sitemap.missing-urls.index') }}" class="sitemap-tool-link">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                404 log
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
