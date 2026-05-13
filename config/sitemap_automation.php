@@ -34,7 +34,80 @@ return [
     |
     */
 
-    'middleware' => [],
+    'middleware' => ['web'],
+
+    /*
+    |--------------------------------------------------------------------------
+    | URL redirects & 404 logging
+    |--------------------------------------------------------------------------
+    |
+    | These settings live in this file only because the package ships one merged
+    | config—they are not limited to "sitemap" or to Eloquent models. You get:
+    |
+    | - path_redirects: static/marketing URLs (about, contact, landing pages)
+    |   without any model—good for git-reviewed rules.
+    | - Database rules (admin UI): arbitrary old→new pairs, hit counts, 410s.
+    | - redirects.models / observe_sitemap_models: optional automation when
+    |   blog/product slugs change or rows are deleted.
+    |
+    | Database rules win over path_redirects when both define the same old_url.
+    |
+    */
+
+    'redirects' => [
+        'enabled' => true,
+        'register_global_middleware' => true,
+        'observe_sitemap_models' => true,
+
+        /*
+        | Static path redirects (no database, no Eloquent). Keys and targets are
+        | normalized like DB rules. Value can be:
+        | - string: new path or full URL, 301
+        | - [newPathOrUrl, statusCode] e.g. ['/contact', 301] or ['', 410]
+        | - ['to' => '/x', 'status' => 302] or ['target' => 'https://…', 'status' => 301]
+        */
+        'path_redirects' => [
+            // '/about-old' => '/about',
+            // '/reach-us' => ['/contact', 301],
+            // '/legacy-promo' => ['to' => '/offers', 'status' => 302],
+            // '/retired-page' => ['', 410],
+        ],
+
+        'models' => [
+            // \App\Models\Blog::class => [
+            //     'url_prefix' => '/blog/',
+            //     'slug_field' => 'slug',
+            //     'on_delete' => [
+            //         'strategy' => 'listing', // listing|gone|url|relation|model_method
+            //         'listing_path' => '/blog',
+            //         // 'target_url' => '/support', // for strategy "url"
+            //         // 'relation' => 'category',
+            //         // 'relation_slug_field' => 'slug',
+            //         // 'relation_path_prefix' => '/categories/',
+            //         // 'fallback_strategy' => 'gone', // when relation missing
+            //         // 'method' => 'getRedirectUrlAfterDelete', // model_method
+            //     ],
+            // ],
+        ],
+        'http_methods' => ['GET', 'HEAD'],
+        'except_path_prefixes' => [
+            '/admin',
+        ],
+        'skip_path_suffixes' => [
+            // '.xml',
+        ],
+    ],
+
+    'not_found_logging' => [
+        'enabled' => true,
+        'http_methods' => ['GET', 'HEAD'],
+        'except_path_prefixes' => [
+            '/admin',
+        ],
+        'skip_extensions' => [
+            'ico', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'css', 'js', 'map', 'txt', 'woff', 'woff2', 'ttf',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

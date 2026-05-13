@@ -2,9 +2,17 @@
 
 namespace MightyWarnersKochi\SitemapKit;
 
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use MightyWarnersKochi\SitemapKit\Observers\SitemapObserver;
 use MightyWarnersKochi\SitemapKit\Console\Commands\SitemapGenerateCommand;
+use MightyWarnersKochi\SitemapKit\Http\Middleware\ResolveUrlRedirects;
+use MightyWarnersKochi\SitemapKit\Listeners\LogMissingUrl;
+use MightyWarnersKochi\SitemapKit\Observers\SitemapObserver;
+use MightyWarnersKochi\SitemapKit\Observers\UrlRedirectObserver;
+use MightyWarnersKochi\SitemapKit\Support\RedirectConfiguration;
 
 class SitemapAutomationServiceProvider extends ServiceProvider
 {
@@ -23,7 +31,8 @@ class SitemapAutomationServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Publish config
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/sitemap_automation.php' => config_path('sitemap_automation.php'),
@@ -38,24 +47,42 @@ class SitemapAutomationServiceProvider extends ServiceProvider
             ]);
         }
 
-        // Register observers
         $modelsWithConfig = config('sitemap_automation.models', []);
         foreach ($modelsWithConfig as $key => $value) {
             $model = is_numeric($key) ? $value : $key;
-            if (class_exists($model)) {
+            if (is_string($model) && class_exists($model)) {
                 $model::observe(SitemapObserver::class);
             }
         }
 
-        // Load views
+        if (config('sitemap_automation.redirects.enabled', true)) {
+            foreach (array_keys(RedirectConfiguration::mergedModels()) as $modelClass) {
+                if (is_string($modelClass) && class_exists($modelClass)) {
+                    $modelClass::observe(UrlRedirectObserver::class);
+                }
+            }
+        }
+
+        if (
+            config('sitemap_automation.redirects.enabled', true)
+            && config('sitemap_automation.redirects.register_global_middleware', true)
+        ) {
+            $kernel = $this->app->make(Kernel::class);
+            if (method_exists($kernel, 'prependMiddleware')) {
+                $kernel->prependMiddleware(ResolveUrlRedirects::class);
+            }
+        }
+
+        if (config('sitemap_automation.not_found_logging.enabled', true)) {
+            Event::listen(RequestHandled::class, LogMissingUrl::class);
+        }
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'sitemap-automation');
 
-        // Load routes
-        $middleware = config('sitemap_automation.middleware', []);
-        
-        \Illuminate\Support\Facades\Route::middleware($middleware)
-            ->group(function () {
-                $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
-            });
+        $middleware = config('sitemap_automation.middleware', ['web']);
+
+        Route::middleware($middleware)->group(function () {
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        });
     }
 }

@@ -125,6 +125,12 @@
     </p>
 
     <div class="sitemap-actions" style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+        <a href="{{ route('sitemap.redirects.index') }}" class="sitemap-btn" style="flex: 1; min-width: 200px; background: #2b6cb0; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            URL redirects
+        </a>
+        <a href="{{ route('sitemap.missing-urls.index') }}" class="sitemap-btn" style="flex: 1; min-width: 200px; background: #805ad5; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            404 log
+        </a>
         <form action="{{ route('sitemap.generate') }}" method="GET" style="flex: 1; min-width: 200px;">
             <button type="submit" class="sitemap-btn">
                 {{ $exists ? 'Regenerate Sitemap' : 'Generate Sitemap' }}
