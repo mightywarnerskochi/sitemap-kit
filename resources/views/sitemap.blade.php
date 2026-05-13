@@ -39,11 +39,42 @@
         .sitemap-card:hover {
             transform: translateY(-5px);
         }
-        .sitemap-card h1 {
+        .sitemap-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        .sitemap-card-header h1 {
             color: #1a202c;
             font-size: 1.875rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin: 0;
+            flex: 1;
+            min-width: min(100%, 220px);
+        }
+        .sitemap-view-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1rem;
+            border-radius: 0.65rem;
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(45, 55, 72, 0.25);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            white-space: nowrap;
+        }
+        .sitemap-view-header:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+            color: white;
         }
         .sitemap-card p {
             color: #4a5568;
@@ -97,40 +128,33 @@
             color: #166534;
             border: 1px solid #bbf7d0;
         }
-        .sitemap-actions {
+        .sitemap-actions-stack {
             display: flex;
-            gap: 1rem;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: stretch;
             margin-top: 0.5rem;
-            flex-wrap: wrap;
-            justify-content: center;
         }
-        .sitemap-actions .sitemap-btn {
-            flex: 1;
-            min-width: 200px;
+        .sitemap-actions-stack .sitemap-row-full {
+            width: 100%;
+        }
+        .sitemap-actions-stack .sitemap-row-full form {
+            width: 100%;
+            margin: 0;
+        }
+        .sitemap-actions-stack .sitemap-btn {
+            width: 100%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
             box-sizing: border-box;
         }
+        .sitemap-tool-row--after-regenerate {
+            margin-top: 0.15rem;
+        }
         .sitemap-btn--orange {
             background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%) !important;
-        }
-        .sitemap-btn--neutral {
-            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
-        }
-        .sitemap-seo-tools {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-        }
-        .sitemap-seo-tools-label {
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: #a0aec0;
-            margin-bottom: 0.75rem;
         }
         .sitemap-tool-row {
             display: flex;
@@ -152,6 +176,9 @@
             font-weight: 500;
             text-decoration: none;
             transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
         }
         .sitemap-tool-link:hover {
             border-color: #667eea;
@@ -167,7 +194,18 @@
 @endif
 
 <div class="sitemap-card">
-    <h1>Sitemap Management</h1>
+    <div class="sitemap-card-header">
+        <h1>Sitemap Management</h1>
+        @if($exists)
+            <a href="{{ url('sitemap.xml') }}" target="_blank" class="sitemap-view-header">
+                View Sitemap
+                <svg style="width: 1.1rem; height: 1.1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+            </a>
+        @endif
+    </div>
     
     @if($exists)
         <div class="sitemap-status sitemap-status-exists">
@@ -190,37 +228,19 @@
         The system already monitors content changes, but you can manually trigger a full crawl here.
     </p>
 
-    <div class="sitemap-actions">
-        <form action="{{ route('sitemap.generate') }}" method="GET" style="flex: 1; min-width: 200px;">
-            <button type="submit" class="sitemap-btn">
-                {{ $exists ? 'Regenerate Sitemap' : 'Generate Sitemap' }}
-                <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem; vertical-align: middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-            </button>
-        </form>
+    <div class="sitemap-actions-stack">
+        <div class="sitemap-row-full">
+            <form action="{{ route('sitemap.generate') }}" method="GET">
+                <button type="submit" class="sitemap-btn">
+                    {{ $exists ? 'Regenerate Sitemap' : 'Generate Sitemap' }}
+                    <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem; vertical-align: middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
 
-        @if($exists)
-            <a href="{{ route('sitemap.edit') }}" class="sitemap-btn sitemap-btn--orange" style="flex: 1; min-width: 200px;">
-                Edit Manual
-                <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-            </a>
-
-            <a href="{{ url('sitemap.xml') }}" target="_blank" class="sitemap-btn sitemap-btn--neutral" style="flex: 1; min-width: 200px;">
-                View Sitemap
-                <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-            </a>
-        @endif
-    </div>
-
-    <div class="sitemap-seo-tools">
-        <div class="sitemap-seo-tools-label">Related SEO tools</div>
-        <div class="sitemap-tool-row">
+        <div class="sitemap-tool-row sitemap-tool-row--after-regenerate">
             <a href="{{ route('sitemap.redirects.index') }}" class="sitemap-tool-link">
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4M16 17H4m0 0l4 4m-4-4l4-4"></path>
@@ -234,6 +254,17 @@
                 404 log
             </a>
         </div>
+
+        @if($exists)
+            <div class="sitemap-row-full">
+                <a href="{{ route('sitemap.edit') }}" class="sitemap-btn sitemap-btn--orange">
+                    Edit Manual
+                    <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                </a>
+            </div>
+        @endif
     </div>
 
     @if(session('success'))
