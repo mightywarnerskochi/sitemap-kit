@@ -31,7 +31,9 @@ return [
     | Regenerate uses Spatie SitemapGenerator: it starts at app.url and follows
     | links like a small browser. Any href—including direct .webp, .pdf, or
     | /uploads/... asset URLs—would be added unless you exclude it here.
-    | Returning nothing from hasCrawled omits the URL (see SitemapService).
+    | Returning nothing from hasCrawled omits the URL. shouldCrawl also skips
+    | fetching asset links. If you publish this file with an empty extensions
+    | array, the package falls back to built-in defaults in SitemapService.
     |
     */
 

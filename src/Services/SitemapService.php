@@ -8,6 +8,40 @@ use Spatie\Sitemap\SitemapGenerator;
 class SitemapService
 {
     /**
+     * Default file extensions to omit from crawl-based sitemaps when config is empty
+     * or missing (e.g. older published config/sitemap_automation.php).
+     */
+    protected function defaultCrawlExcludeExtensions(): array
+    {
+        return [
+            'webp', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'bmp', 'avif',
+            'pdf', 'css', 'js', 'mjs', 'map',
+            'woff', 'woff2', 'ttf', 'eot', 'otf',
+            'mp4', 'webm', 'ogg', 'mp3', 'wav', 'zip', 'gz', 'tar',
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function crawlExcludeExtensions(): array
+    {
+        $v = config('sitemap_automation.sitemap_crawl_exclude_extensions');
+
+        return is_array($v) && $v !== [] ? $v : $this->defaultCrawlExcludeExtensions();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function crawlExcludePathPrefixes(): array
+    {
+        $v = config('sitemap_automation.sitemap_crawl_exclude_path_prefixes');
+
+        return is_array($v) ? $v : [];
+    }
+
+    /**
      * Generate the sitemap.
      * If a model is provided, it performs a partial update to preserve manual edits.
      * Otherwise, it performs a full crawl (Regenerate).
@@ -26,11 +60,25 @@ class SitemapService
      */
     protected function fullCrawl(): void
     {
-        SitemapGenerator::create(config('app.url'))
-            ->hasCrawled(function (\Spatie\Sitemap\Tags\Url $url) {
+        $baseUrl = (string) config('app.url');
+
+        $generator = SitemapGenerator::create($baseUrl);
+
+        if (method_exists($generator, 'shouldCrawl')) {
+            $generator->shouldCrawl(function ($uri) {
+                $path = $this->pathFromCrawlUri($uri);
+
+                return ! $this->shouldExcludePathFromCrawl($path);
+            });
+        }
+
+        $generator
+            ->hasCrawled(function (\Spatie\Sitemap\Tags\Url $url) use ($baseUrl) {
                 if ($this->shouldExcludeFromCrawl($url)) {
                     return;
                 }
+
+                $this->normalizeCanonicalHomeUrl($url, $baseUrl);
 
                 if ($url->segment(1) === null) {
                     $url->setPriority(1.0);
@@ -49,21 +97,42 @@ class SitemapService
      */
     protected function shouldExcludeFromCrawl(\Spatie\Sitemap\Tags\Url $url): bool
     {
-        $path = $this->crawlUrlPath($url);
+        return $this->shouldExcludePathFromCrawl($this->crawlUrlPath($url));
+    }
+
+    /**
+     * @param  mixed  $uri  UriInterface|string
+     */
+    protected function pathFromCrawlUri($uri): string
+    {
+        $s = is_string($uri) ? $uri : (string) $uri;
+        $path = parse_url($s, PHP_URL_PATH);
+        if ($path === null || $path === '') {
+            return '/';
+        }
+
+        return $path;
+    }
+
+    /**
+     * True = omit this path from the sitemap (assets, configured prefixes).
+     */
+    protected function shouldExcludePathFromCrawl(string $path): bool
+    {
         if ($path === '') {
             return false;
         }
 
         $pathLower = Str::lower($path);
 
-        foreach (config('sitemap_automation.sitemap_crawl_exclude_extensions', []) as $ext) {
+        foreach ($this->crawlExcludeExtensions() as $ext) {
             $ext = Str::lower(ltrim((string) $ext, '.'));
             if ($ext !== '' && Str::endsWith($pathLower, '.'.$ext)) {
                 return true;
             }
         }
 
-        foreach (config('sitemap_automation.sitemap_crawl_exclude_path_prefixes', []) as $prefix) {
+        foreach ($this->crawlExcludePathPrefixes() as $prefix) {
             $prefix = trim((string) $prefix);
             if ($prefix === '') {
                 continue;
@@ -76,6 +145,22 @@ class SitemapService
         }
 
         return false;
+    }
+
+    /**
+     * Collapse https://example.com and https://example.com/ to one canonical loc (trailing slash on host root).
+     */
+    protected function normalizeCanonicalHomeUrl(\Spatie\Sitemap\Tags\Url $url, string $baseUrl): void
+    {
+        $path = $this->crawlUrlPath($url);
+        if ($path !== '' && $path !== '/') {
+            return;
+        }
+
+        $canonical = rtrim($baseUrl, '/').'/';
+        if (method_exists($url, 'setUrl')) {
+            $url->setUrl($canonical);
+        }
     }
 
     /**
@@ -95,26 +180,28 @@ class SitemapService
     /**
      * Perform a partial update to the existing sitemap.xml file.
      */
-    protected function partialUpdate($model, bool $isDeletion): void
+    protected function partialUpdate($model, $isDeletion): void
     {
         $path = public_path('sitemap.xml');
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             $this->fullCrawl();
+
             return;
         }
 
         $url = $this->resolveModelUrl($model);
-        if (!$url) {
+        if (! $url) {
             return;
         }
 
         $xml = new \DOMDocument();
         $xml->preserveWhiteSpace = false;
         $xml->formatOutput = true;
-        
-        if (!$xml->load($path)) {
+
+        if (! $xml->load($path)) {
             $this->fullCrawl();
+
             return;
         }
 
@@ -144,16 +231,16 @@ class SitemapService
                 // Add new entry
                 $urlset = $xml->documentElement;
                 $urlNode = $xml->createElement('url');
-                
+
                 $locNode = $xml->createElement('loc', $url);
                 $urlNode->appendChild($locNode);
-                
+
                 $lastmodNode = $xml->createElement('lastmod', now()->toIso8601String());
                 $urlNode->appendChild($lastmodNode);
-                
+
                 $priorityNode = $xml->createElement('priority', '0.8');
                 $urlNode->appendChild($priorityNode);
-                
+
                 $urlset->appendChild($urlNode);
             }
         }
@@ -179,7 +266,7 @@ class SitemapService
         // 3. Dynamic resolution via config
         $class = get_class($model);
         $config = config('sitemap_automation.models', []);
-        
+
         // Find the model config (it might be a key in an associative array)
         $modelConfig = null;
         if (isset($config[$class]) && is_array($config[$class])) {
@@ -188,12 +275,12 @@ class SitemapService
 
         if ($modelConfig && isset($modelConfig['url_prefix'])) {
             $baseUrl = rtrim(config('app.url'), '/');
-            $prefix = '/' . trim($modelConfig['url_prefix'], '/');
+            $prefix = '/'.trim($modelConfig['url_prefix'], '/');
             $slugField = $modelConfig['slug_field'] ?? 'slug';
             $slug = $model->{$slugField} ?? null;
 
             if ($slug) {
-                return $baseUrl . $prefix . '/' . ltrim($slug, '/');
+                return $baseUrl.$prefix.'/'.ltrim($slug, '/');
             }
         }
 
