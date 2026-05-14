@@ -9,6 +9,7 @@ class MissingUrlLog extends Model
     protected $table = 'missing_url_logs';
 
     protected $fillable = [
+        'url_hash',
         'url',
         'referer',
         'hit_count',

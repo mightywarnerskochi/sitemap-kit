@@ -98,6 +98,18 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | 404 URL logging
+    |--------------------------------------------------------------------------
+    |
+    | Only HTTP responses with status 404 are stored. If ResolveUrlRedirects
+    | matches a rule first, the client receives 301/302/410 instead—so that path
+    | will not appear in missing_url_logs (use the redirect list and hit_count).
+    | Run migrations after package updates (url_hash column improves reliability).
+    |
+    */
+
     'not_found_logging' => [
         'enabled' => true,
         'http_methods' => ['GET', 'HEAD'],
