@@ -98,24 +98,116 @@
             background-color: #fde8e8;
             color: #9b1c1c;
         }
+        .sitemap-actions-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: stretch;
+            margin-top: 0.5rem;
+        }
+        .sitemap-row-primary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: stretch;
+        }
+        .sitemap-row-primary--single .sitemap-primary-cell {
+            flex: 1 1 100%;
+        }
+        .sitemap-primary-cell {
+            flex: 1 1 calc(50% - 0.375rem);
+            min-width: 160px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sitemap-primary-cell form {
+            width: 100%;
+            margin: 0;
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+        }
+        .sitemap-primary-cell .sitemap-btn {
+            width: 100%;
+            flex: 1;
+            min-height: 3.25rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            font-size: 0.9375rem;
+            border-radius: 0.85rem;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.22);
+        }
+        .sitemap-primary-cell .sitemap-btn--orange {
+            box-shadow: 0 2px 8px rgba(237, 137, 54, 0.28);
+        }
+        .sitemap-row-secondary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: stretch;
+            padding: 0.65rem;
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 0.85rem;
+        }
+        .sitemap-tool-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1 1 calc(50% - 0.375rem);
+            min-width: 140px;
+            min-height: 2.85rem;
+            padding: 0.65rem 1rem;
+            border-radius: 0.65rem;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #334155;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+        .sitemap-tool-link:hover {
+            border-color: #a5b4fc;
+            color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+            transform: translateY(-1px);
+        }
+        .sitemap-tool-link svg {
+            flex-shrink: 0;
+            color: #64748b;
+        }
+        .sitemap-tool-link:hover svg {
+            color: #4f46e5;
+        }
         .sitemap-btn {
             display: inline-block;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 0.875rem 2rem;
-            border-radius: 0.75rem;
+            padding: 0.875rem 1.25rem;
+            border-radius: 0.85rem;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
             cursor: pointer;
             border: none;
             width: 100%;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
         .sitemap-btn:hover {
-            opacity: 0.9;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transform: translateY(-2px);
+            opacity: 0.95;
+            box-shadow: 0 8px 20px -4px rgba(102, 126, 234, 0.45);
+            transform: translateY(-1px);
+        }
+        .sitemap-btn--orange {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 55%, #dd6b20 100%) !important;
+        }
+        .sitemap-btn--orange:hover {
+            box-shadow: 0 8px 20px -4px rgba(237, 137, 54, 0.45);
         }
         .sitemap-alert {
             margin-top: 1.5rem;
@@ -127,68 +219,6 @@
             background-color: #f0fdf4;
             color: #166534;
             border: 1px solid #bbf7d0;
-        }
-        .sitemap-actions-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            align-items: stretch;
-            margin-top: 0.5rem;
-        }
-        .sitemap-actions-stack .sitemap-row-full {
-            width: 100%;
-        }
-        .sitemap-actions-stack .sitemap-row-full form {
-            width: 100%;
-            margin: 0;
-        }
-        .sitemap-actions-stack .sitemap-btn {
-            width: 100%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            box-sizing: border-box;
-        }
-        .sitemap-tool-row--after-regenerate {
-            margin-top: 0.15rem;
-        }
-        .sitemap-btn--orange {
-            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%) !important;
-        }
-        .sitemap-tool-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            justify-content: center;
-            align-items: stretch;
-        }
-        .sitemap-tool-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.55rem 1rem;
-            border-radius: 0.65rem;
-            border: 1px solid #cbd5e0;
-            background: #f8fafc;
-            color: #475569;
-            font-size: 0.8125rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-            flex: 1;
-            min-width: 140px;
-            justify-content: center;
-        }
-        .sitemap-tool-link:hover {
-            border-color: #667eea;
-            color: #5a67d8;
-            background: #fff;
-            box-shadow: 0 1px 3px rgba(102, 126, 234, 0.12);
-        }
-        .sitemap-tool-link svg {
-            flex-shrink: 0;
-            opacity: 0.85;
         }
     </style>
 @endif
@@ -229,18 +259,43 @@
     </p>
 
     <div class="sitemap-actions-stack">
-        <div class="sitemap-row-full">
-            <form action="{{ route('sitemap.generate') }}" method="GET">
-                <button type="submit" class="sitemap-btn">
-                    {{ $exists ? 'Regenerate Sitemap' : 'Generate Sitemap' }}
-                    <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem; vertical-align: middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                    </svg>
-                </button>
-            </form>
-        </div>
+        @if($exists)
+            <div class="sitemap-row-primary">
+                <div class="sitemap-primary-cell">
+                    <form action="{{ route('sitemap.generate') }}" method="GET">
+                        <button type="submit" class="sitemap-btn">
+                            Regenerate Sitemap
+                            <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem; vertical-align: middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+                <div class="sitemap-primary-cell">
+                    <a href="{{ route('sitemap.edit') }}" class="sitemap-btn sitemap-btn--orange">
+                        Edit Manual
+                        <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        @else
+            <div class="sitemap-row-primary sitemap-row-primary--single">
+                <div class="sitemap-primary-cell">
+                    <form action="{{ route('sitemap.generate') }}" method="GET">
+                        <button type="submit" class="sitemap-btn">
+                            Generate Sitemap
+                            <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem; vertical-align: middle;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @endif
 
-        <div class="sitemap-tool-row sitemap-tool-row--after-regenerate">
+        <div class="sitemap-row-secondary">
             <a href="{{ route('sitemap.redirects.index') }}" class="sitemap-tool-link">
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4M16 17H4m0 0l4 4m-4-4l4-4"></path>
@@ -254,17 +309,6 @@
                 404 log
             </a>
         </div>
-
-        @if($exists)
-            <div class="sitemap-row-full">
-                <a href="{{ route('sitemap.edit') }}" class="sitemap-btn sitemap-btn--orange">
-                    Edit Manual
-                    <svg style="width: 1.25rem; height: 1.25rem; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                </a>
-            </div>
-        @endif
     </div>
 
     @if(session('success'))
