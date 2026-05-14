@@ -2,6 +2,7 @@
 
 namespace MightyWarnersKochi\SitemapKit\Services;
 
+use Illuminate\Support\Str;
 use Spatie\Sitemap\SitemapGenerator;
 
 class SitemapService
@@ -25,17 +26,70 @@ class SitemapService
      */
     protected function fullCrawl(): void
     {
-        \Spatie\Sitemap\SitemapGenerator::create(config('app.url'))
+        SitemapGenerator::create(config('app.url'))
             ->hasCrawled(function (\Spatie\Sitemap\Tags\Url $url) {
+                if ($this->shouldExcludeFromCrawl($url)) {
+                    return;
+                }
+
                 if ($url->segment(1) === null) {
                     $url->setPriority(1.0);
                 } else {
                     $url->setPriority(0.8);
                 }
                 $url->setLastModificationDate(now());
+
                 return $url;
             })
             ->writeToFile(public_path('sitemap.xml'));
+    }
+
+    /**
+     * Skip asset / static file URLs so the crawl-based sitemap lists pages, not every image/PDF link.
+     */
+    protected function shouldExcludeFromCrawl(\Spatie\Sitemap\Tags\Url $url): bool
+    {
+        $path = $this->crawlUrlPath($url);
+        if ($path === '') {
+            return false;
+        }
+
+        $pathLower = Str::lower($path);
+
+        foreach (config('sitemap_automation.sitemap_crawl_exclude_extensions', []) as $ext) {
+            $ext = Str::lower(ltrim((string) $ext, '.'));
+            if ($ext !== '' && Str::endsWith($pathLower, '.'.$ext)) {
+                return true;
+            }
+        }
+
+        foreach (config('sitemap_automation.sitemap_crawl_exclude_path_prefixes', []) as $prefix) {
+            $prefix = trim((string) $prefix);
+            if ($prefix === '') {
+                continue;
+            }
+            $p = '/'.ltrim($prefix, '/');
+            $p = rtrim($p, '/') === '' ? '/' : rtrim($p, '/');
+            if ($p !== '/' && (Str::startsWith($pathLower, Str::lower($p).'/') || $pathLower === Str::lower($p))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Request path from a Spatie crawl URL tag (handles older package versions).
+     */
+    protected function crawlUrlPath(\Spatie\Sitemap\Tags\Url $url): string
+    {
+        if (method_exists($url, 'path')) {
+            return (string) $url->path();
+        }
+
+        $loc = $url->url ?? (string) $url;
+
+        return (string) (parse_url((string) $loc, PHP_URL_PATH) ?? '');
     }
 
     /**

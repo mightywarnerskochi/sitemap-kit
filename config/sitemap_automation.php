@@ -25,6 +25,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Full sitemap crawl (“Regenerate”)
+    |--------------------------------------------------------------------------
+    |
+    | Regenerate uses Spatie SitemapGenerator: it starts at app.url and follows
+    | links like a small browser. Any href—including direct .webp, .pdf, or
+    | /uploads/... asset URLs—would be added unless you exclude it here.
+    | Returning nothing from hasCrawled omits the URL (see SitemapService).
+    |
+    */
+
+    'sitemap_crawl_exclude_extensions' => [
+        'webp', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'bmp', 'avif',
+        'pdf', 'css', 'js', 'mjs', 'map',
+        'woff', 'woff2', 'ttf', 'eot', 'otf',
+        'mp4', 'webm', 'ogg', 'mp3', 'wav', 'zip', 'gz', 'tar',
+    ],
+
+    /*
+    | Paths starting with any of these (after normalizing slashes) are skipped.
+    | Example: '/uploads/portfolio/gallery/image_webp' to drop that gallery folder.
+    */
+    'sitemap_crawl_exclude_path_prefixes' => [
+        // '/uploads/portfolio/gallery/image_webp',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Route Middleware
     |--------------------------------------------------------------------------
     |
