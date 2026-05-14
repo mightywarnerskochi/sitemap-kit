@@ -69,11 +69,7 @@
         .sk-act-btn--danger:hover { border-color: #fecaca; color: #b91c1c; background: #fef2f2; }
         .sk-act-btn svg { width: 1rem; height: 1rem; }
         .sk-alert { margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-        .sk-trouble { font-size: 0.875rem; color: #475569; line-height: 1.6; margin-bottom: 1rem; padding: 1rem 1.1rem; background: #fffbeb; border: 1px solid #fde68a; border-radius: 0.65rem; }
-        .sk-trouble-title { display: block; font-size: 0.9375rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem; }
-        .sk-trouble ul { margin: 0.35rem 0 0; padding-left: 1.2rem; }
-        .sk-trouble li { margin-bottom: 0.4rem; }
-        .sk-trouble li:last-child { margin-bottom: 0; }
+        .sk-intro { font-size: 0.875rem; color: #64748b; line-height: 1.5; margin: 0 0 1rem; max-width: 48rem; }
         .sk-empty { padding: 2rem; text-align: center; color: #64748b; font-size: 0.875rem; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
     </style>
@@ -93,9 +89,9 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             </a>
             @if(config('sitemap_automation.redirects.allow_optimize_clear_from_admin', true))
-                <form method="post" action="{{ route('sitemap.redirects.optimize-clear') }}" style="display:inline;margin:0;" onsubmit="return confirm('Refresh the site internal cache? Use this after big changes to settings or routes.');">
+                <form method="post" action="{{ route('sitemap.redirects.optimize-clear') }}" style="display:inline;margin:0;" onsubmit="return confirm('Refresh the site cache? Use this if a link still looks wrong after you changed redirects or settings.');">
                     @csrf
-                    <button type="submit" class="sk-icon-btn sk-icon-btn--cache" title="Refresh site cache (for developers: optimize:clear)">
+                    <button type="submit" class="sk-icon-btn sk-icon-btn--cache" title="Refresh site cache if links look wrong after changes">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </button>
                 </form>
@@ -107,16 +103,7 @@
         <div class="sk-alert">{{ session('success') }}</div>
     @endif
 
-    <div class="sk-trouble" role="note">
-        <span class="sk-trouble-title">Deleted a redirect but the link still acts strange?</span>
-        Rules on this page are read live from the database—there is no hidden “memory” inside this screen. If visitors still see odd behaviour, it is usually one of these:
-        <ul>
-            <li><strong>The visitor’s browser remembers an old “permanent” move.</strong> Ask a colleague to test in a <strong>private / incognito window</strong>, or clear site data for your domain—especially after long‑standing redirects.</li>
-            <li><strong>Another rule still exists.</strong> Search this table for the path, or ask your developer if the same address is redirected in hosting, server rules, or elsewhere in the project.</li>
-            <li><strong>Automatic rules from content.</strong> Some sites recreate a redirect when a blog or product URL is edited. If that feature is on, saving content can add a row back—check this list again after edits.</li>
-            <li><strong>Refresh internal cache after big changes.</strong> Click the <strong>yellow lightning</strong> button in the toolbar (same as your developer running a full cache clear from the server).</li>
-        </ul>
-    </div>
+    <p class="sk-intro">Tell the site where <strong>old URLs</strong> should go instead—use <strong>+</strong> to add, <strong>search</strong> to find, and the top icons for the 404 list, sitemap, or a cache refresh.</p>
 
     <form method="get" action="{{ route('sitemap.redirects.index') }}" class="sk-filter">
         <div class="sk-filter-grow">

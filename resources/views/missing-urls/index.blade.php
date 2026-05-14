@@ -37,11 +37,7 @@
         }
         .sk-icon-btn:hover { background: #fff; border-color: #c7d2fe; color: #4f46e5; }
         .sk-icon-btn svg { width: 1.15rem; height: 1.15rem; }
-        .sk-hint { font-size: 0.875rem; color: #475569; line-height: 1.6; margin-bottom: 1rem; padding: 1rem 1.1rem; background: #f8fafc; border-radius: 0.65rem; border: 1px solid #e2e8f0; }
-        .sk-hint-title { display: block; font-size: 0.9375rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem; }
-        .sk-hint ul { margin: 0.35rem 0 0; padding-left: 1.2rem; }
-        .sk-hint li { margin-bottom: 0.4rem; }
-        .sk-hint li:last-child { margin-bottom: 0; }
+        .sk-intro { font-size: 0.875rem; color: #64748b; line-height: 1.5; margin: 0 0 1rem; max-width: 48rem; }
         .sk-filter { display: flex; gap: 0.5rem; align-items: flex-end; margin-bottom: 1rem; flex-wrap: wrap; }
         .sk-filter label { display: block; font-size: 0.72rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
         .sk-filter-grow { flex: 1; min-width: 200px; }
@@ -100,16 +96,7 @@
         </nav>
     </div>
 
-    <div class="sk-hint" role="note">
-        <span class="sk-hint-title">How this log helps SEO &amp; content</span>
-        This page lists <strong>addresses that returned “page not found”</strong> to real visitors. Use it to find broken links, old campaigns, or typos that still get clicks from Google or other sites.
-        <ul>
-            <li><strong>Healthy pages do not belong here.</strong> If a URL opens the correct article or section, it will not be listed—that means the visit was successful, not an error.</li>
-            <li><strong>Successful redirects are not errors.</strong> If an old URL sends people to the new URL using a rule under <em>URL Redirects</em>, that visit is good for users and SEO and <strong>will not</strong> appear in this log.</li>
-            <li><strong>Testing after you change something?</strong> If your browser still jumps to an old page even though the redirect was removed, try a <strong>private / incognito window</strong> or another browser—browsers often remember “permanent” moves for a long time.</li>
-            <li><strong>Nothing new showing up?</strong> Ask your developer to confirm the visit really ends as “not found” (not a normal page load) and that the site is on the latest version of this tool if you recently updated it. For stuck settings, they can use the <strong>yellow lightning</strong> button on the <em>URL Redirects</em> page to refresh the site’s internal cache.</li>
-        </ul>
-    </div>
+    <p class="sk-intro"><strong>404s only</strong>—URLs that hit “page not found”; search, add a redirect from a row, or clear the log when you are done reviewing.</p>
 
     @if(session('success'))
         <div class="sk-alert">{{ session('success') }}</div>
@@ -184,7 +171,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="sk-empty">No broken addresses recorded yet—or logging is turned off. Remember: working pages and successful redirects never appear here; only real “page not found” visits do.</td></tr>
+                    <tr><td colspan="5" class="sk-empty">Nothing to show yet—only real “page not found” visits appear here.</td></tr>
                 @endforelse
             </tbody>
         </table>
