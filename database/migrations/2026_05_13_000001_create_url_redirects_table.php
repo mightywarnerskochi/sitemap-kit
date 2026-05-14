@@ -4,10 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * MySQL/InnoDB: a UNIQUE index on a long utf8mb4 VARCHAR (e.g. old_url 2048) exceeds the max key length (~3072 bytes).
+ * We store the full path in old_url (TEXT, not unique) and enforce uniqueness on old_url_hash (64-char SHA-256 hex).
+ */
 class CreateUrlRedirectsTable extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * Single migration for `url_redirects` (no separate alter migrations).
      *
      * @return void
      */
@@ -15,10 +21,8 @@ class CreateUrlRedirectsTable extends Migration
     {
         Schema::create('url_redirects', function (Blueprint $table) {
             $table->id();
-            // Full path can be long; unique index on utf8mb4 VARCHAR(2048) exceeds MySQL key limits.
-            // Uniqueness is enforced on old_url_hash (sha256 hex); old_url is the human-readable value.
             $table->text('old_url');
-            $table->string('old_url_hash', 64)->unique();
+            $table->char('old_url_hash', 64)->unique();
             $table->text('new_url')->nullable();
             $table->unsignedSmallInteger('status_code')->default(301);
             $table->unsignedBigInteger('hit_count')->default(0);
