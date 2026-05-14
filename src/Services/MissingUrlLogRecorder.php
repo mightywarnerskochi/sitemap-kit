@@ -1,33 +1,25 @@
 <?php
 
-namespace MightyWarnersKochi\SitemapKit\Listeners;
+namespace MightyWarnersKochi\SitemapKit\Services;
 
 use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use MightyWarnersKochi\SitemapKit\Models\MissingUrlLog;
-use MightyWarnersKochi\SitemapKit\Services\RedirectPathNormalizer;
 
-class LogMissingUrl
+class MissingUrlLogRecorder
 {
     /**
-     * Handle the event.
+     * Persist a missing-URL hit when the response qualifies (HTTP 404 and/or soft 404).
      *
-     * @return void
+     * @param  \Symfony\Component\HttpFoundation\Response|null  $response
      */
-    public function handle(RequestHandled $event)
+    public function record(Request $request, $response): void
     {
         if (! config('sitemap_automation.not_found_logging.enabled', true)) {
             return;
         }
-
-        $response = $event->response;
-        if (! $response || $response->getStatusCode() !== 404) {
-            return;
-        }
-
-        $request = $event->request;
 
         if (! in_array($request->method(), config('sitemap_automation.not_found_logging.http_methods', ['GET', 'HEAD']), true)) {
             return;
@@ -40,6 +32,10 @@ class LogMissingUrl
         }
 
         if ($this->shouldSkipExtension($path)) {
+            return;
+        }
+
+        if (! $this->shouldLogAsMissingUrl($response)) {
             return;
         }
 
@@ -75,6 +71,74 @@ class LogMissingUrl
         } catch (QueryException $e) {
             $this->recoverFromDuplicateUrl($url, $referer, $e);
         }
+    }
+
+    /**
+     * @param  \Symfony\Component\HttpFoundation\Response|null  $response
+     */
+    protected function shouldLogAsMissingUrl($response): bool
+    {
+        if (! $response) {
+            return false;
+        }
+
+        if ($response->getStatusCode() === 404) {
+            return true;
+        }
+
+        $soft = config('sitemap_automation.not_found_logging.soft_404', []);
+
+        if (! ($soft['enabled'] ?? false)) {
+            return false;
+        }
+
+        $statuses = $soft['http_statuses'] ?? [200];
+        if (! in_array($response->getStatusCode(), $statuses, true)) {
+            return false;
+        }
+
+        return $this->responseBodyMatchesSoft404Markers($response, $soft);
+    }
+
+    /**
+     * @param  \Symfony\Component\HttpFoundation\Response  $response
+     */
+    protected function responseBodyMatchesSoft404Markers($response, array $soft): bool
+    {
+        $contentType = strtolower((string) $response->headers->get('Content-Type', ''));
+        if ($contentType === '' || strpos($contentType, 'text/html') === false) {
+            return false;
+        }
+
+        $markers = $soft['body_markers'] ?? [];
+        if (! is_array($markers) || $markers === []) {
+            return false;
+        }
+
+        $content = $response->getContent();
+        if (! is_string($content) || $content === '') {
+            return false;
+        }
+
+        $max = (int) ($soft['max_bytes_to_scan'] ?? 65536);
+        if ($max < 1) {
+            $max = 65536;
+        }
+
+        $snippet = strlen($content) > $max ? substr($content, 0, $max) : $content;
+        $lowerSnippet = Str::lower($snippet);
+
+        foreach ($markers as $marker) {
+            $marker = (string) $marker;
+            if ($marker === '') {
+                continue;
+            }
+            if (Str::contains($lowerSnippet, Str::lower($marker))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function recordHitByHash(string $hash, string $url, ?string $referer): void

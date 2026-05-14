@@ -109,10 +109,12 @@ return [
     | 404 URL logging
     |--------------------------------------------------------------------------
     |
-    | Only HTTP responses with status 404 are stored. If ResolveUrlRedirects
-    | matches a rule first, the client receives 301/302/410 instead—so that path
-    | will not appear in missing_url_logs (use the redirect list and hit_count).
-    | Run migrations after package updates (url_hash column improves reliability).
+    | Real HTTP 404 responses are always logged (when enabled). Some themes
+    | return 200 OK with an HTML "not found" page instead—use soft_404 below to
+    | log those. If ResolveUrlRedirects matches first, the client gets 301/302/410
+    | and the path will not appear here. Run migrations after package updates.
+    | Logging uses global post-response middleware (RecordMissingUrls) after
+    | $next($request), same pattern as a typical “log miss after response” stack.
     |
     */
 
@@ -124,6 +126,21 @@ return [
         ],
         'skip_extensions' => [
             'ico', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'css', 'js', 'map', 'txt', 'woff', 'woff2', 'ttf',
+        ],
+
+        /*
+        | Log "missing" URLs when the status is not 404 but the HTML looks like
+        | a not-found page (case-insensitive substring match on the first N bytes).
+        | Tune body_markers for your theme; set enabled to false to disable.
+        */
+        'soft_404' => [
+            'enabled' => true,
+            'http_statuses' => [200],
+            'max_bytes_to_scan' => 65536,
+            'body_markers' => [
+                'PAGE NOT FOUND',
+                'Page Not Found',
+            ],
         ],
     ],
 

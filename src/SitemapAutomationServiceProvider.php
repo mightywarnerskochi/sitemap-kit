@@ -3,13 +3,11 @@
 namespace MightyWarnersKochi\SitemapKit;
 
 use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Foundation\Http\Events\RequestHandled;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use MightyWarnersKochi\SitemapKit\Console\Commands\SitemapGenerateCommand;
+use MightyWarnersKochi\SitemapKit\Http\Middleware\RecordMissingUrls;
 use MightyWarnersKochi\SitemapKit\Http\Middleware\ResolveUrlRedirects;
-use MightyWarnersKochi\SitemapKit\Listeners\LogMissingUrl;
 use MightyWarnersKochi\SitemapKit\Observers\SitemapObserver;
 use MightyWarnersKochi\SitemapKit\Observers\UrlRedirectObserver;
 use MightyWarnersKochi\SitemapKit\Support\RedirectConfiguration;
@@ -74,7 +72,10 @@ class SitemapAutomationServiceProvider extends ServiceProvider
         }
 
         if (config('sitemap_automation.not_found_logging.enabled', true)) {
-            Event::listen(RequestHandled::class, LogMissingUrl::class);
+            $kernel = $this->app->make(Kernel::class);
+            if (method_exists($kernel, 'pushMiddleware')) {
+                $kernel->pushMiddleware(RecordMissingUrls::class);
+            }
         }
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'sitemap-automation');
