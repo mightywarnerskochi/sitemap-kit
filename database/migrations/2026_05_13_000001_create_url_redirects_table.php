@@ -15,8 +15,11 @@ class CreateUrlRedirectsTable extends Migration
     {
         Schema::create('url_redirects', function (Blueprint $table) {
             $table->id();
-            $table->string('old_url', 2048)->unique();
-            $table->string('new_url', 2048)->nullable();
+            // Full path can be long; unique index on utf8mb4 VARCHAR(2048) exceeds MySQL key limits.
+            // Uniqueness is enforced on old_url_hash (sha256 hex); old_url is the human-readable value.
+            $table->text('old_url');
+            $table->string('old_url_hash', 64)->unique();
+            $table->text('new_url')->nullable();
             $table->unsignedSmallInteger('status_code')->default(301);
             $table->unsignedBigInteger('hit_count')->default(0);
             $table->unsignedBigInteger('created_by')->nullable();

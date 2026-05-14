@@ -15,8 +15,10 @@ class CreateMissingUrlLogsTable extends Migration
     {
         Schema::create('missing_url_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('url', 2048)->unique();
-            $table->string('referer', 2048)->nullable();
+            // Same pattern as url_redirects: avoid MySQL utf8mb4 unique on long VARCHAR.
+            $table->string('url_hash', 64)->unique();
+            $table->text('url');
+            $table->text('referer')->nullable();
             $table->unsignedBigInteger('hit_count')->default(1);
             $table->timestamp('first_seen_at')->useCurrent();
             $table->timestamp('last_seen_at')->useCurrent();

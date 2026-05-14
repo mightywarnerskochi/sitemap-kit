@@ -16,7 +16,8 @@ class UrlRedirectService
      */
     public function findForPath(string $normalizedPath): ?UrlRedirect
     {
-        $this->matched = UrlRedirect::query()->where('old_url', $normalizedPath)->first();
+        $hash = hash('sha256', $normalizedPath);
+        $this->matched = UrlRedirect::query()->where('old_url_hash', $hash)->first();
 
         return $this->matched;
     }
@@ -160,7 +161,7 @@ class UrlRedirectService
 
         /** @var UrlRedirect $model */
         $model = UrlRedirect::query()->updateOrCreate(
-            ['old_url' => $oldUrl],
+            ['old_url_hash' => hash('sha256', $oldUrl)],
             $payload
         );
 
