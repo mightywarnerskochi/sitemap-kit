@@ -34,4 +34,20 @@ class MissingUrlLogController extends Controller
 
         return redirect()->route('sitemap.missing-urls.index')->with('success', 'Log entry removed.');
     }
+
+    /**
+     * Remove all 404 log rows (requires confirmation checkbox).
+     */
+    public function clear(Request $request)
+    {
+        $request->validate([
+            'confirm_clear' => 'required|accepted',
+        ], [
+            'confirm_clear.accepted' => 'Check “Confirm clear” before emptying the log.',
+        ]);
+
+        MissingUrlLog::query()->delete();
+
+        return redirect()->route('sitemap.missing-urls.index')->with('success', '404 log cleared.');
+    }
 }

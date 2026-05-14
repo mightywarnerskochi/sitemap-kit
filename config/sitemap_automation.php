@@ -96,6 +96,12 @@ return [
         'skip_path_suffixes' => [
             // '.xml',
         ],
+
+        /*
+        | When true, the URL redirects admin toolbar can run optimize:clear.
+        | Set to false in production if you prefer CLI-only cache clears.
+        */
+        'allow_optimize_clear_from_admin' => true,
     ],
 
     /*

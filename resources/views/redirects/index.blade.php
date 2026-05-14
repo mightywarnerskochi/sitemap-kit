@@ -39,6 +39,9 @@
         .sk-icon-btn--primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: #fff; }
         .sk-icon-btn--primary:hover { opacity: 0.95; color: #fff; border: none; }
         .sk-icon-btn svg { width: 1.15rem; height: 1.15rem; }
+        button.sk-icon-btn { font: inherit; cursor: pointer; }
+        .sk-icon-btn--cache { border-color: #fcd34d; background: #fffbeb; color: #b45309; }
+        .sk-icon-btn--cache:hover { border-color: #f59e0b; color: #92400e; background: #fff7ed; }
         .sk-filter { display: flex; gap: 0.5rem; align-items: flex-end; margin-bottom: 1rem; flex-wrap: wrap; }
         .sk-filter label { display: block; font-size: 0.72rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
         .sk-filter-grow { flex: 1; min-width: 200px; }
@@ -66,6 +69,7 @@
         .sk-act-btn--danger:hover { border-color: #fecaca; color: #b91c1c; background: #fef2f2; }
         .sk-act-btn svg { width: 1rem; height: 1rem; }
         .sk-alert { margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .sk-trouble { font-size: 0.8125rem; color: #64748b; line-height: 1.55; margin-bottom: 1rem; padding: 0.75rem 1rem; background: #fffbeb; border: 1px solid #fde68a; border-radius: 0.5rem; }
         .sk-empty { padding: 2rem; text-align: center; color: #64748b; font-size: 0.875rem; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
     </style>
@@ -84,12 +88,24 @@
             <a href="{{ route('sitemap.index') }}" class="sk-icon-btn" title="Sitemap">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             </a>
+            @if(config('sitemap_automation.redirects.allow_optimize_clear_from_admin', true))
+                <form method="post" action="{{ route('sitemap.redirects.optimize-clear') }}" style="display:inline;margin:0;" onsubmit="return confirm('Run php artisan optimize:clear? This clears config, route, view, and compiled caches.');">
+                    @csrf
+                    <button type="submit" class="sk-icon-btn sk-icon-btn--cache" title="Optimize clear (php artisan optimize:clear)">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </button>
+                </form>
+            @endif
         </nav>
     </div>
 
     @if(session('success'))
         <div class="sk-alert">{{ session('success') }}</div>
     @endif
+
+    <p class="sk-trouble">
+        <strong>Removed a rule but the URL still redirects?</strong> This package reads <code>url_redirects</code> on each request—there is no in-memory redirect cache in the package. Common causes: <strong>browser cache</strong> for 301, a row you did not delete (search the table), <code>path_redirects</code> in config, <strong>web server</strong> rewrites, Laravel <code>Route::redirect</code>, or an <strong>automatic redirect observer</strong> recreating a rule when content is saved. Use the toolbar <strong>Optimize clear</strong> (lightning) after config or route changes, or run <code>php artisan optimize:clear</code> in the terminal.
+    </p>
 
     <form method="get" action="{{ route('sitemap.redirects.index') }}" class="sk-filter">
         <div class="sk-filter-grow">

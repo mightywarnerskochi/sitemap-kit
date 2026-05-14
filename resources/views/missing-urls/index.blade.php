@@ -68,6 +68,16 @@
         .sk-act-btn--danger:hover { border-color: #fecaca; color: #b91c1c; background: #fef2f2; }
         .sk-act-btn svg { width: 1rem; height: 1rem; }
         .sk-alert { margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .sk-alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .sk-toolbar { display: flex; justify-content: flex-end; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+        .sk-clear-form { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+        .sk-check { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8125rem; color: #475569; cursor: pointer; user-select: none; }
+        .sk-check input { width: 1rem; height: 1rem; accent-color: #4f46e5; }
+        .sk-btn-clear {
+            padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.8125rem;
+            border: 1px solid #fecaca; background: #fff; color: #b91c1c; cursor: pointer;
+        }
+        .sk-btn-clear:hover { background: #fef2f2; }
         .sk-empty { padding: 2rem; text-align: center; color: #64748b; font-size: 0.875rem; line-height: 1.6; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
     </style>
@@ -87,13 +97,35 @@
     </div>
 
     <p class="sk-hint">
-        Only requests that end with a <strong>404</strong> response are logged. If a path matches a <strong>redirect</strong> rule first, the browser gets a 301/302 instead of 404, so that path will not appear here (check <strong>URL redirects</strong> and hit counts).
-        After code changes, run <code>php artisan migrate</code> so logging can use the latest schema.
+        <strong>What gets logged:</strong> only requests whose final HTTP status is <strong>404</strong>. A working page (status <strong>200</strong>) will never appear here.<br><br>
+        <strong>Redirects vs 404:</strong> if middleware matches a redirect first, the response is <strong>301/302/410</strong>, not 404, so that path is not listed. If you deleted a DB rule but the browser still redirects, clear <strong>browser cache</strong> (301 is cached), check <code>config/sitemap_automation.php</code> for <code>path_redirects</code>, and run <code>php artisan optimize:clear</code>.<br><br>
+        <strong>Still missing rows?</strong> Confirm DevTools → Network shows status <strong>404</strong> (not 200/302). Run <code>php artisan migrate</code> after package updates.
     </p>
 
     @if(session('success'))
         <div class="sk-alert">{{ session('success') }}</div>
     @endif
+
+    @if ($errors->any())
+        <div class="sk-alert sk-alert-error" role="alert">
+            <ul style="margin:0;padding-left:1.2rem;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <div class="sk-toolbar">
+        <form method="post" action="{{ route('sitemap.missing-urls.clear') }}" class="sk-clear-form" onsubmit="return confirm('Delete every row in the 404 log? This cannot be undone.');">
+            @csrf
+            <label class="sk-check">
+                <input type="checkbox" name="confirm_clear" value="1">
+                <span>Confirm clear</span>
+            </label>
+            <button type="submit" class="sk-btn-clear">Clear log</button>
+        </form>
+    </div>
 
     <form method="get" action="{{ route('sitemap.missing-urls.index') }}" class="sk-filter">
         <div class="sk-filter-grow">
@@ -143,7 +175,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="sk-empty">No 404s logged yet, or logging is disabled in config. Remember: matching redirects never return 404, so those paths are not listed here.</td></tr>
+                    <tr><td colspan="5" class="sk-empty">No 404 responses logged yet, or logging is disabled in config. If this URL loads the article (status 200), it will not appear here. Redirects (301/302) are not 404s either—remove stale rules and bypass browser cache if an old URL still redirects.</td></tr>
                 @endforelse
             </tbody>
         </table>

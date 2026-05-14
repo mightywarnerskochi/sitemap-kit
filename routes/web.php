@@ -13,6 +13,7 @@ Route::prefix('admin/sitemap')->name('sitemap.')->group(function () {
 
     Route::prefix('redirects')->name('redirects.')->group(function () {
         Route::get('/', [UrlRedirectController::class, 'index'])->name('index');
+        Route::post('/optimize-clear', [UrlRedirectController::class, 'optimizeClear'])->name('optimize-clear');
         Route::get('/create', [UrlRedirectController::class, 'create'])->name('create');
         Route::post('/', [UrlRedirectController::class, 'store'])->name('store');
         Route::get('/{redirect}/edit', [UrlRedirectController::class, 'edit'])->name('edit');
@@ -22,6 +23,7 @@ Route::prefix('admin/sitemap')->name('sitemap.')->group(function () {
 
     Route::prefix('missing-urls')->name('missing-urls.')->group(function () {
         Route::get('/', [MissingUrlLogController::class, 'index'])->name('index');
+        Route::post('/clear', [MissingUrlLogController::class, 'clear'])->name('clear');
         Route::get('/{missingUrlLog}/create-redirect', [MissingUrlLogController::class, 'promote'])->name('promote');
         Route::delete('/{missingUrlLog}', [MissingUrlLogController::class, 'destroy'])->name('destroy');
     });

@@ -118,8 +118,8 @@ The package provides routes to manage the sitemap from your own admin panel:
 - **Regenerate**: `admin/sitemap/generate` (GET) - Name: `sitemap.generate`
 - **Edit Manual**: `admin/sitemap/edit` (GET) - Name: `sitemap.edit`
 - **Update Manual**: `admin/sitemap/update` (POST) - Name: `sitemap.update`
-- **Redirects**: `admin/sitemap/redirects` (GET) - Name: `sitemap.redirects.index`
-- **404 log**: `admin/sitemap/missing-urls` (GET) - Name: `sitemap.missing-urls.index`
+- **Redirects**: `admin/sitemap/redirects` (GET) - Name: `sitemap.redirects.index`; toolbar can run `POST admin/sitemap/redirects/optimize-clear` (`optimize:clear`) - Name: `sitemap.redirects.optimize-clear` (toggle with `redirects.allow_optimize_clear_from_admin` in config).
+- **404 log**: `admin/sitemap/missing-urls` (GET) - Name: `sitemap.missing-urls.index`; clear all rows: `POST admin/sitemap/missing-urls/clear` - Name: `sitemap.missing-urls.clear` (requires “Confirm clear” checkbox).
 
 *Note: These routes use the middleware defined in your configuration (default `web`). Add `auth` or your admin gate to the `middleware` array in `config/sitemap_automation.php` when exposing this UI in production.*
 

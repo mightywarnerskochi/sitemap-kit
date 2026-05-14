@@ -4,6 +4,7 @@ namespace MightyWarnersKochi\SitemapKit\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use MightyWarnersKochi\SitemapKit\Models\UrlRedirect;
 use MightyWarnersKochi\SitemapKit\Services\RedirectPathNormalizer;
@@ -79,6 +80,20 @@ class UrlRedirectController extends Controller
         $redirect->delete();
 
         return redirect()->route('sitemap.redirects.index')->with('success', 'Redirect deleted.');
+    }
+
+    /**
+     * Run `php artisan optimize:clear` (config, route, view, event caches).
+     */
+    public function optimizeClear()
+    {
+        if (! config('sitemap_automation.redirects.allow_optimize_clear_from_admin', true)) {
+            return redirect()->route('sitemap.redirects.index')->with('success', 'Optimize clear is disabled in config.');
+        }
+
+        Artisan::call('optimize:clear');
+
+        return redirect()->route('sitemap.redirects.index')->with('success', 'Laravel caches cleared (optimize:clear).');
     }
 
     /**
